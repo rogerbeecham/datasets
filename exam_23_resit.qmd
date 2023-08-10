@@ -1,0 +1,151 @@
+---
+title: 'ESS2023 3D: Take home resit exam'
+format:
+  pdf:
+    toc: true
+    number-sections: false
+    colorlinks: true
+---
+
+## Introduction
+
+This document contains instructions for the resit *take-home* exam element of the Essex Summer School 2023 course: *3D - Computational Methods for Social Data Science*. 
+
+To complete the exam, you will follow the activities described in this `.qmd` file, a computational notebook, and populate the relevant sections of each task. The template for the file can be downloaded from [this link](https://www.roger-beecham.com/datasets/exam_23_resit.qmd).
+
+
+I have emphasised things that you need to do as ***instructions***, along with the marks awarded for each task and sub-task. Whereas the timed exam tests your statistical understanding and ability to interpret graphics, this *take-home* exam tests your skills at performing `tidyverse`-style data processing operations, at creating `ggplot2` specifications and also at generating graphics for communication. 
+
+Once you have completed all sections of the notebook, *Render* the document to `.pdf` before submitting it by e-mail to [r.j.beecham@leeds.ac.uk](mailto:r.j.beecham@leeds.ac.uk), *CC* [essexsummerschoolssda@essex.ac.uk](mailto:essexsummerschoolssda@essex.ac.uk). 
+
+Expect to spend no more than 2-3 hours on the notebook.
+
+\
+
+> ***Total marks: 100***
+
+## Setup
+
+You will work with Covid-19 data made available by Joachim Gassen's [`tidycovid19`] R package. This package collates various datasets recording global cases, deaths, broader population data and information on public health implementation measures. 
+
+The code block below loads these data in, as well as the `tidyverse` package necessary for working through the notebook.
+
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(tidyverse) 
+remotes::install_github("joachim-gassen/tidycovid19")
+library(tidycovid19)
+
+# Download Johns Hopkins Data on cases and deaths data by country.
+dat <- download_jhu_csse_covid19_data()
+```
+
+The dataset records daily reported confirmed cases (`confirmed`), deaths (`deaths`), with associated dates (`data`) for 195 countries (`country`). Data are recorded from the pandemic onset in early 2020 through to 2023. However, in this take home exam you will be working with data from selected countries up to the end of March 2020. 
+
+You will work on the Financial Times's widely acclaimed "deaths charts" used to monitor and compare Covid-19 growth trajectories between countries -- see Figure 8.1 of [chapter 8](https://vis4sds.github.io/vis4sds/08-storytelling.html). The chart is based on a subset of countries and presents cumulative deaths in the daily record data after the first 10 deaths have been reported.
+
+## Task 1: Calculating cumulative sums
+
+Below is code for generating this data subset: daily data filtered for the selected countries and also upto the end of March 2020.
+
+```{r}
+#| echo: true
+#| eval: false
+
+# Selected countries.
+countries <- c("Spain", "Italy", "France", "United Kingdom", "US", "Korea, South", "Japan",
+               "China", "Iran", "Netherlands", "Switzerland", "Germany", "Belgium", "Indonesia",
+               "Philippines", "Iraq", "Sweden")
+
+dat <- dat |>  
+  filter(country %in% countries, date< "2020-04-01") 
+```
+
+
+> ***Instruction:*** *Write some dplyr code to update the `dat` with variables required for generating the FT's deaths chart. To do this, you will need to calculate a new variable describing cumulative number of deaths (`deaths_cum`) and cumulative number of days that elapsed since at least 10 deaths were reported in that country (`day_num`). Hint: You will want to use the `cusum()` function to calculative the cumulative counts; you may also wish to create a variable identifying each country's starting point --  when the 10-day cumulative deaths number is breached.* 
+>
+> ***20 marks***
+
+## Task 2: Plot country lines on log scale
+
+
+> ***Instruction:*** *Write some ggplot2 code to generate a paired-back version of the deaths chart. You should encode a  line chart for each country, with the y-axis (death counts) expressed on a log scale and with day counts (since 10th death) on the x-axis. Place your code in the block below. Also save your plot as a `.png` file and insert the file as a figure into your `.qmd` document so that it appears on Render to .pdf ([guidance heres](https://quarto.org/docs/authoring/figures.html)). An example of how the plot should roughly look is [`here`](https://www.roger-beecham.com/datasets/cum_deaths1.png). Note that the way in which you style the chart -- the ggplot2 `theme()` and use of fonts --  is up to you.* 
+>
+> ***20 marks***
+
+```{r}
+#| echo: true
+#| eval: false
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+``` 
+
+## Task 3: Update chart with appropriate country colours
+
+
+> ***Instruction:*** *Below I have identified colours to encode each of the country lines. Write some code to update your ggplot2 plot such that the country lines are coloured according to those identified below. An example of how the plot should roughly look is [`here`](https://www.roger-beecham.com/datasets/cum_deaths2.png). Hint: You may wish to create a vector containing these country colours and then recode the `country` variable as a `factor` variable whose levels vary according to this order.* 
+>
+> ***20 marks***
+
+```{r}
+#| echo: true
+#| eval: false
+
+spain <- "#578ad2" 
+france <- "#578ad2" 
+italy <- "#615d5e" 
+china <- "#dd9e40" 
+us <- "#d4608b" 
+uk <- "#93395c" 
+japan <- "#64a7b3" 
+korea_s <- "#64a7b3"
+iran <- "#869141"
+nl <- "#807972"
+switzerland <- "#807972"
+germany <- "#807972"
+belgium <- "#807972"
+indonesia <- "#807972"
+philippines <- "#807972"
+iraq <- "#807972"
+sweden <- "#807972"
+
+```
+
+```{r}
+#| echo: true
+#| eval: false
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+``` 
+
+
+## Task 4: Add annotations to your chart programmatically
+
+
+> ***Instruction:*** *Finally annotate your plot with labels for selected countries, as in the [example plot](https://www.roger-beecham.com/datasets/cum_deaths3.png). You should use `geom_text()` to add these labels, and you will need to think about how you `filter()` the dataset in order to position those labels at the final recorded `date` ("2020-03-31"). Also notice in the example plot that I have included points and a large dot to emphasise this most recent observed death count.* 
+>
+> ***40 marks***
+
+```{r}
+#| echo: true
+#| eval: false
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+``` 
+  
+\  
+
+
+> ***End of exam***
+
+
+

@@ -11,7 +11,7 @@ format:
 
 This document contains instructions for the *take-home* exam element of the Essex Summer School 2023 course: *3D - Computational Methods for Social Data Science*. 
 
-To complete the exam, you will follow the activities described in this `.qmd` file, a computational notebook, and populate the relevant sections of each task. The template for the file can be downloaded from [this link]().
+To complete the exam, you will follow the activities described in this `.qmd` file, a computational notebook, and populate the relevant sections of each task. The template for the file can be downloaded from [this link](https://www.roger-beecham.com/datasets/exam_23.qmd).
 
 
 I have emphasised things that you need to do as ***instructions***, along with the marks awarded for each task and sub-task. Whereas the timed exam tests your statistical understanding and ability to interpret graphics, this *take-home* exam tests your skills at performing `tidyverse`-style data processing operations, at creating `ggplot2` specifications and also at generating graphics for communication. 
