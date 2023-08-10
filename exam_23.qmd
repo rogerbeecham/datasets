@@ -1,0 +1,159 @@
+---
+title: 'ESS2023 3D: Take home exam'
+format:
+  pdf:
+    toc: true
+    number-sections: false
+    colorlinks: true
+---
+
+## Introduction
+
+This document contains instructions for the *take-home* exam element of the Essex Summer School 2023 course: *3D - Computational Methods for Social Data Science*. 
+
+To complete the exam, you will follow the activities described in this `.qmd` file, a computational notebook, and populate the relevant sections of each task. The template for the file can be downloaded from [this link]().
+
+
+I have emphasised things that you need to do as ***instructions***, along with the marks awarded for each task and sub-task. Whereas the timed exam tests your statistical understanding and ability to interpret graphics, this *take-home* exam tests your skills at performing `tidyverse`-style data processing operations, at creating `ggplot2` specifications and also at generating graphics for communication. 
+
+Once you have completed all sections of the notebook, *Render* the document to `.pdf` before submitting it by e-mail to [r.j.beecham@leeds.ac.uk](mailto:r.j.beecham@leeds.ac.uk), *CC* [essexsummerschoolssda@essex.ac.uk](mailto:essexsummerschoolssda@essex.ac.uk). 
+
+Expect to spend no more than 2-3 hours on the notebook.
+
+\
+
+> ***Total marks: 100***
+
+## Setup
+
+You will work with mobility trends data released by Apple since Jan 2020 to support analysis of changing mobility behaviour in light of Covid-19. The data has been made accessible by [*Kieran Healy*](https://kieranhealy.org/) via the [`covmobility`](https://kjhealy.github.io/covmobility/) package.  I have brought down a subset of the data for cities and regions in Great Britain. The code block below loads these data in, as well as the `tidyverse`, `lubridate` and `RcppRoll` packages necessary for working through the notebook.
+
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(tidyverse) 
+library(lubridate)
+library(RcppRoll) # You may also need to install this package.
+
+# Load in mobility data.
+gb_mobility <- 
+  read_csv("https://www.roger-beecham.com/datasets/gb_mobility.csv")
+```
+
+The main variable in `gb_mobility` is `score`, which measures the relative number of Apple Maps "directions requests" made  by region or city indexed to a baseline of 13th January 2020.  Mobility scores are reported daily and separately by transport mode. 
+
+
+## Task 1: Update relative mobility chart with moving average
+
+Below is code for generating a summary of relative mobility by day and `transportation_type` averaged across all cities in GB and from March 2020. There is an obvious pattern related to lockdown, but you also may notice substantial variation in app usage depending on day of week. 
+
+```{r}
+#| echo: true
+#| eval: false
+
+gb_mobility |> 
+  group_by(transportation_type, date) |>  
+  summarise(score=mean(score)) |> 
+  filter(date>="2020-03-01") |> 
+  ggplot() +
+  geom_line(aes(x=date, y=score, group=transportation_type), linewidth=.2, colour="#1f78b4") +
+  geom_hline(yintercept=100, colour = "#424242", linewidth=.5) + 
+  facet_wrap(~transportation_type) +
+  labs(x="day", y="relative mobility")
+```
+
+> ***Instruction:*** *Update the graphic with a line representing 7-day smoothed (moving average) mobility. To do this you will need first to `mutate()` the data to be plotted with a variable measuring this moving average. I suggest you use the [`RcppRoll`](https://cran.r-project.org/web/packages/RcppRoll/index.html) package. Then you will need to update the plot specification with another `geom_line()` layer representing the moving average.  Place your code in the block below. Also save your plot as a `.png` file and insert the file as a figure into your `.qmd` document so that it appears on Render to .pdf ([guidance heres](https://quarto.org/docs/authoring/figures.html)). An example of how the plot should roughly look is [`here`](https://www.roger-beecham.com/datasets/rel_mob_mode.png). Note that the way in which you style the chart -- the ggplot2 `theme()` and use of fonts --  is up to you.* 
+>
+> ***20 marks***
+
+
+```{r}
+#| echo: true
+#| eval: false
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+```  
+
+
+## Task 2: Analyse relative mobilty by city
+
+You will have noticed from the chart created in Task 1 that the `transportation_type` `transit` (e.g. rail/bus) shows the largest reductions in "directions requests" relative to January 13th 2020. This is likely to vary by city. 
+
+### Task 2a: Summarise over daily mobilty changes in transit app use by city
+
+> ***Instruction:*** *`summarise()` over `gb_mobility` to calculate the average index (`avg_score`) by city, `filter()`-ing the `transportation_type` variable so that only `transit` requests are selected and only for days from March 2020. Store these scores in a separate data frame, then order the data frame on the newly calculated `avg_score` variable and finally extract the ordered city names and store them as a `chr` vector named `ordered_cities`. Note that the city variable is in fact called `region`, so you will need to `group_by()`, `arrange()` and `pull()` out the `region` variable when arriving at the ordered vector of city names. There are hints in here on the combination of `dplyr` functions you could use to complete the task.*
+>
+> ***20 marks***
+
+```{r}
+#| echo: true
+#| eval: false
+
+#######################
+# Enter your code in this chunk provided. 
+######################
+``` 
+
+
+### Task 2b: Plot daily mobilty changes in transit app use by city
+
+> ***Instruction:*** *Adapt your code from Task 1 to generate a plot of daily relative mobility `facet()`-ed by city. Again `filter()` the `transportation_type` variable so that only `transit` requests are shown. Order the facets according to overall changes in mobility using your `ordered_cities` object created in Task 2a. To achieve this you will need to make the city variable (`region`) a factor variable. An example of how the plot should roughly look is [`here`](https://www.roger-beecham.com/datasets/rel_mob_city.png) -- there is no requirement to use the same font or styling/setting parameters as this.*
+>
+> ***20 marks***
+
+
+```{r}
+#| echo: true
+#| eval: false
+
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+``` 
+
+
+## Task 3: Analyse day of week changes in relative mobility through lockdown
+
+You might have noticed some interesting changes moving out of the first lockdown (towards early autumn). As well as an overall increase in `transit` "directions requests", there appears to be an increase in variability in daily requests, oscillating between weekday and weekends. This appears to be most apparent for Birmingham and least apparent for Edinburgh/London. One way of exploring this more directly is to separate out weekday and weekend days and observe differences in the index values.
+
+In the code block below I generate a staging dataset filtered on `transit` requests made between July and December 2020. `lubridate` functions are used to identify the week-of-year in which each observation falls and whether the observation took place on a weekday or weekend (`is_weekend`). I then group by `region`, the week-of-year variable (`week`) and `is_weekend` and calculate the average index value for this grouping. 
+
+```{r}
+#| echo: true
+#| eval: false
+
+weekly_summary <- gb_mobility |> 
+  filter(date>="2020-07-01" & date<"2020-12-01", transportation_type=="transit") |> 
+  mutate(
+    week=week(date),
+    is_weekend=if_else(wday(date, label=TRUE, abbr=TRUE) %in% c("Sat", "Sun"), "weekend", "weekday"),
+    ) |> 
+  group_by(region, is_weekend, week) |> 
+  summarise(score=mean(score), date=min(date)) |>  ungroup()
+```
+
+> ***Instruction:*** *Use this staging dataset to generate a plot similar to that shown [`here`](https://www.roger-beecham.com/datasets/rel_mob_week.png), displaying week-on-week variation in the averaged index values differentiated between weekday and weekend. There are 40 marks available for this one as you may choose to refine your design in a similar way to my suggestion -- for example, ordering facets according to some overall weekday-weekend difference variable and annotating according to specific dates.*
+>
+> ***40 marks***
+
+```{r}
+#| echo: true
+#| eval: false
+#######################
+# Enter your code in this chunk provided. Save your plot to `.png`  and link 
+# to it so it appears on Render.
+######################
+``` 
+
+\  
+
+
+> ***End of exam***
+
+
+
